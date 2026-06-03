@@ -15,6 +15,8 @@ html,body{width:100%;height:100%;overflow:hidden;
   font-family:'Hiragino Mincho ProN','Yu Mincho','MS Mincho',Georgia,serif;
   background:var(--紙);touch-action:none;-webkit-tap-highlight-color:transparent}
 #世界{display:flex;flex-direction:column;width:100%;height:100%;height:100dvh}
+
+/* ── 上部UI ── */
 #上部{flex:0 0 auto;padding:10px 14px 8px;background:var(--ui-bg);
   backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);z-index:20;
   transition:background .8s,border-color .8s}
@@ -34,8 +36,12 @@ html,body{width:100%;height:100%;overflow:hidden;
   color:var(--墨);cursor:pointer;letter-spacing:.06em;transition:all .15s;
   -webkit-tap-highlight-color:transparent}
 .btn:active{background:var(--金);color:#fff;transform:scale(.97)}
+
+/* ── Canvas ── */
 #地図層{flex:1 1 auto;position:relative;overflow:hidden;min-height:0}
 canvas{display:block;width:100%;height:100%}
+
+/* ── 下部ステータス ── */
 #下部{flex:0 0 auto;padding:8px 14px;background:var(--ui-bg);
   backdrop-filter:blur(12px);border-top:1px solid var(--bd);z-index:20;
   cursor:pointer;transition:background .8s;user-select:none;min-height:42px}
@@ -46,12 +52,16 @@ canvas{display:block;width:100%;height:100%}
   white-space:nowrap;min-width:72px;text-align:right;transition:color .3s}
 #人口表示.増加{color:#2d7a4a!important}
 #人口表示.減少{color:#c84b2f!important}
+
+/* ── 夜モード ── */
 body.夜{--ui-bg:rgba(14,20,38,.95);--bd:rgba(80,120,200,.2)}
 body.夜 #題字,body.夜 #状態文,body.夜 .btn,body.夜 #入力欄{color:#b8ccee}
 body.夜 #入力欄{background:rgba(20,30,55,.6);border-color:rgba(80,120,200,.25)}
 body.夜 .btn{background:rgba(20,30,55,.5);border-color:rgba(80,120,200,.2)}
 body.夜 #文明バッジ{background:rgba(80,120,200,.15);color:#8ab4e8;border-color:rgba(80,120,200,.22)}
 body.夕{--ui-bg:rgba(200,130,90,.92);--bd:rgba(180,90,50,.3)}
+
+/* タイムラプス幕 */
 #TL幕{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;
   flex-direction:column;justify-content:center;align-items:center;
   color:#f2ece0;gap:14px;text-align:center;padding:24px}
@@ -59,6 +69,8 @@ body.夕{--ui-bg:rgba(200,130,90,.92);--bd:rgba(180,90,50,.3)}
 #TL幕 .大{font-size:36px}
 #TL幕 .本{font-size:14px;letter-spacing:.1em;line-height:1.7}
 #TL幕 .小{font-size:11px;opacity:.6}
+
+/* ── 隠しエンディング ── */
 #砂嵐幕{display:none;position:fixed;inset:0;z-index:300;pointer-events:all}
 #砂嵐幕.on{display:block}
 #砂嵐Canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -75,6 +87,7 @@ body.夕{--ui-bg:rgba(200,130,90,.92);--bd:rgba(180,90,50,.3)}
   transition:color 1.5s,text-shadow 1.5s;
 }
 #フェードメッセージ .行.見える{color:rgba(242,236,220,.95);}
+
 #最終画面{
   display:none;position:fixed;inset:0;z-index:400;
   background:radial-gradient(ellipse at 50% 60%, #0a0e1a 0%, #050810 100%);
@@ -125,7 +138,7 @@ body.夕{--ui-bg:rgba(200,130,90,.92);--bd:rgba(180,90,50,.3)}
     </div>
     <div id="ボタン行">
       <button class="btn" id="命ボタン">✦ 命を吹き込む</button>
-      <button class="btn" id="リresetボタン">◌ リセット</button>
+      <button class="btn" id="リセットボタン">◌ リセット</button>
     </div>
   </div>
   <div id="地図層"><canvas id="舞台"></canvas></div>
@@ -141,6 +154,8 @@ body.夕{--ui-bg:rgba(200,130,90,.92);--bd:rgba(180,90,50,.3)}
   <div class="本">あなたが留守にしていた間に、<br>激動の歴史が流れたようです…</div>
   <div class="小" id="TL詳細"></div>
 </div>
+
+<!-- 隠しエンディング：砂嵐幕 -->
 <div id="砂嵐幕">
   <canvas id="砂嵐Canvas"></canvas>
   <canvas id="文字舞台"></canvas>
@@ -150,6 +165,8 @@ body.夕{--ui-bg:rgba(200,130,90,.92);--bd:rgba(180,90,50,.3)}
     <div class="行" id="msg3">私たちは君が作った</div>
   </div>
 </div>
+
+<!-- 最終画面 -->
 <div id="最終画面">
   <div class="装飾線"></div>
   <div style="height:4px"></div>
@@ -163,40 +180,48 @@ body.夕{--ui-bg:rgba(200,130,90,.92);--bd:rgba(180,90,50,.3)}
   <div class="署名">ありがとう。</div>
   <button id="戻るボタン">世界へ戻る</button>
 </div>
+
 <script>
 // ══════════════════════════════════════════════════════
 //  世界の摂理定数
 // ══════════════════════════════════════════════════════
 const K = {
   最大住民: 1500,
-  基本サイズ: 9,       
+  基本サイズ: 9,       // 超小型フォント
   最大サイズ: 22,
   成長率: 0.18,
-  繁殖間隔: 280,       
+  繁殖間隔: 280,       // フレーム
   繁殖確率: 0.25,
+  // 物理
   斥力係数: 14,
   斥力半径倍率: 1.5,
   速度減衰: 0.86,
   定着カウント必要: 120,
   定着速度閾値: 0.12,
+  // 陣形
   陣形引力: 0.028,
   陣形引力半径: 90,
+  // 代謝
   代謝周期最小: 200,
   代謝周期最大: 600,
   畑最大: 80,
   畑熟成フレーム: 600,
+  // 狩り
   狩り間隔: 350,
   遠征隊サイズ: 5,
+  // パーティクル
   火花最大: 400,
   足跡最大: 300,
   エモート最大: 120,
   昇天最大: 80,
   人口表示最大: 20,
+  // 文字属性セット
   危険文字: new Set([...'危険敵魔悪殺鬼怖恐呪憎毒']),
   安住文字: new Set([...'家街安平穏癒静愛和温里']),
   戦文字:   new Set([...'戦剣闘勇武侍鎧']),
   資源文字: new Set([...'肉魚草木食水実穀豊']),
   道路文字: new Set([...'ーー━─〜道路街']),
+  // 陣形定義（簡略ドット絵）
   家陣形: [
     [0,-3],[1,-3],[-1,-3],[2,-2],[-2,-2],[0,-2],
     [3,-1],[2,-1],[1,-1],[0,-1],[-1,-1],[-2,-1],[-3,-1],
@@ -228,6 +253,9 @@ const 文明称号 = [
   [200,'書の市街'],[500,'文明都市'],[1000,'言語の帝国'],
 ];
 
+// ══════════════════════════════════════════════════════
+//  グローバル状態
+// ══════════════════════════════════════════════════════
 const canvas = document.getElementById('舞台');
 const ctx    = canvas.getContext('2d');
 const $入力  = document.getElementById('入力欄');
@@ -237,154 +265,1140 @@ const $文明  = document.getElementById('文明バッジ');
 const $TL幕  = document.getElementById('TL幕');
 const $TL詳  = document.getElementById('TL詳細');
 
-let 住民リスト = []; let 畑リスト = []; let 火花リスト = []; 
-let 足跡リスト = []; let エモートリスト = []; let 昇天リスト = []; 
-let 人口増減表示 = []; let 一族色Map = {}; let 文字頻度 = {}; 
-let 既知文字 = new Set(); let 遠征隊リスト = [];
-let 繁殖タイマー = 0; let 狩りタイマー = 0; let 状態タイマー = 0;
-let マウス中 = false; let TL中 = false; let TL残フレーム = 0; 
-let 人口前回 = 0; let 人口点滅タイマー = 0; let フレーム = 0; let RAF_ID = null;
+let 住民リスト = [];
+let 畑リスト   = [];
+let 火花リスト = [];   // パーティクル
+let 足跡リスト = [];
+let エモートリスト = [];
+let 昇天リスト = [];   // 天使昇天エフェクト
+let 人口増減表示 = [];
+let 一族色Map  = {};
+let 文字頻度   = {};
+let 既知文字   = new Set();
+let 遠征隊リスト = [];
+let 繁殖タイマー = 0;
+let 狩りタイマー = 0;
+let 状態タイマー = 0;
+let マウス中   = false;
+let TL中       = false;
+let TL残フレーム = 0;
+let 人口前回   = 0;
+let 人口点滅タイマー = 0;
+let フレーム = 0;
+let RAF_ID = null;
 
+// ── 隠しエンディング用変数 ──
 let エンディング発動済み = false;
 let 隠しコマンド待機中  = false;
 let 隠しコマンドタイマー = null;
 
-let AC = null; let マスターゲイン = null;
-let 砂嵐ノイズ節点 = null; let 砂嵐ゲイン節点 = null;
-let 生成音カウンター = 0;
+// ══════════════════════════════════════════════════════
+//  Web Audio API シンセサイザー
+// ══════════════════════════════════════════════════════
+let AC = null;            // AudioContext（遅延初期化）
+let マスターゲイン = null;
+let 砂嵐ノイズ節点 = null; // ホワイトノイズ用
+let 砂嵐ゲイン節点 = null;
+let 生成音カウンター = 0;  // 同時発音数の制限用
+let 生成音タイマー  = null;
+
 function AC初期化() {
-  if (AC) { if (AC.state === 'suspended') AC.resume(); return; }
+  if (AC) {
+    // suspended 状態を解除
+    if (AC.state === 'suspended') AC.resume();
+    return;
+  }
   try {
     AC = new (window.AudioContext || window.webkitAudioContext)();
-    マスターゲイン = AC.createGain(); マスターゲイン.gain.value = 0.55;
+    マスターゲイン = AC.createGain();
+    マスターゲイン.gain.value = 0.55;
     マスターゲイン.connect(AC.destination);
   } catch(e) { AC = null; }
 }
+
+// ── 文字誕生音（ピコン系・サイン波）──
 function 誕生音(遅延ms = 0) {
   if (!AC || AC.state !== 'running') return;
-  生成音カウンター++; if (生成音カウンター > 6) { 生成音カウンター--; return; }
+  // 同時発音が多すぎる場合は間引く
+  生成音カウンター++;
+  if (生成音カウンター > 6) { 生成音カウンター--; return; }
+
   const t = AC.currentTime + 遅延ms / 1000;
-  const osc = AC.createOscillator(); const gain = AC.createGain();
+  const osc  = AC.createOscillator();
+  const gain = AC.createGain();
+
+  // 音量：同時発音数に応じて下げる（音割れ防止）
   const vol = Math.max(0.04, 0.18 / Math.sqrt(生成音カウンター));
-  gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(vol, t + 0.01);
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(vol, t + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-  const 基音 = 880 + Math.random() * 440;
-  osc.type = 'sine'; osc.frequency.setValueAtTime(基音 * 0.75, t);
+
+  // 周波数：ランダムにピッチを変えて単調にならないように
+  const 基音 = 880 + Math.random() * 440; // 880〜1320 Hz
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(基音 * 0.75, t);
   osc.frequency.linearRampToValueAtTime(基音, t + 0.06);
   osc.frequency.exponentialRampToValueAtTime(基音 * 1.12, t + 0.18);
-  osc.connect(gain); gain.connect(マスターゲイン); osc.start(t); osc.stop(t + 0.25);
+
+  osc.connect(gain);
+  gain.connect(マスターゲイン);
+  osc.start(t);
+  osc.stop(t + 0.25);
   osc.onended = () => { 生成音カウンター = Math.max(0, 生成音カウンター - 1); };
 }
+
+// ── 砂嵐ホワイトノイズ開始 ──
 function 砂嵐音開始() {
-  if (!AC || AC.state !== 'running') return; 砂嵐音停止();
-  const バッファSz = AC.sampleRate * 2; const バッファ = AC.createBuffer(1, バッファSz, AC.sampleRate);
-  const data = バッファ.getChannelData(0); for (let i = 0; i < バッファSz; i++) data[i] = Math.random() * 2 - 1;
-  砂嵐ノイズ節点 = AC.createBufferSource(); 砂嵐ノイズ節点.buffer = バッファ; 砂嵐ノイズ節点.loop = true;
-  const filter = AC.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 3800; filter.Q.value = 0.7;
-  砂嵐ゲイン節点 = AC.createGain(); 砂嵐ゲイン節点.gain.setValueAtTime(0, AC.currentTime);
-  砂嵐ゲイン節点.gain.linearRampToValueAtTime(0.38, AC.currentTime + 1.2);
-  砂嵐ノイズ節点.connect(filter); filter.connect(砂嵐ゲイン節点); 砂嵐ゲイン節点.connect(マスターゲイン); 砂嵐ノイズ節点.start();
+  if (!AC || AC.state !== 'running') return;
+  砂嵐音停止(); // 二重起動防止
+
+  const バッファSz = AC.sampleRate * 2; // 2秒分をループ
+  const バッファ  = AC.createBuffer(1, バッファSz, AC.sampleRate);
+  const data      = バッファ.getChannelData(0);
+  for (let i = 0; i < バッファSz; i++) data[i] = Math.random() * 2 - 1;
+
+  砂嵐ノイズ節点 = AC.createBufferSource();
+  砂嵐ノイズ節点.buffer = バッファ;
+  砂嵐ノイズ節点.loop   = true;
+
+  // ローパスフィルタで「ザザー」感を出す
+  const filter = AC.createBiquadFilter();
+  filter.type            = 'lowpass';
+  filter.frequency.value = 3800;
+  filter.Q.value         = 0.7;
+
+  砂嵐ゲイン節点 = AC.createGain();
+  砂嵐ゲイン節点.gain.setValueAtTime(0, AC.currentTime);
+  砂嵐ゲイン節点.gain.linearRampToValueAtTime(0.38, AC.currentTime + 1.2); // フェードイン
+
+  砂嵐ノイズ節点.connect(filter);
+  filter.connect(砂嵐ゲイン節点);
+  砂嵐ゲイン節点.connect(マスターゲイン);
+  砂嵐ノイズ節点.start();
 }
+
+// ── 砂嵐ホワイトノイズ停止（フェードアウト）──
 function 砂嵐音停止(フェード秒 = 1.8) {
   if (!AC || !砂嵐ゲイン節点 || !砂嵐ノイズ節点) return;
-  const g = 砂嵐ゲイン節点; const s = 砂嵐ノイズ節点;
-  g.gain.cancelScheduledValues(AC.currentTime); g.gain.setValueAtTime(g.gain.value, AC.currentTime);
+  const g = 砂嵐ゲイン節点;
+  const s = 砂嵐ノイズ節点;
+  g.gain.cancelScheduledValues(AC.currentTime);
+  g.gain.setValueAtTime(g.gain.value, AC.currentTime);
   g.gain.linearRampToValueAtTime(0.0001, AC.currentTime + フェード秒);
-  s.stop(AC.currentTime + フェード秒 + 0.05); 砂嵐ゲイン節点 = null; 砂嵐ノイズ節点 = null;
+  s.stop(AC.currentTime + フェード秒 + 0.05);
+  砂嵐ゲイン節点 = null;
+  砂嵐ノイズ節点 = null;
 }
-function 初回起動日取得() { try { let d = localStorage.getItem('文字生態系_初回'); if (!d) { d = Date.now().toString(); localStorage.setItem('文字生態系_初回', d); } return parseInt(d, 10); } catch(e) { return Date.now(); } }
-function 通常エンディング条件チェック() { if (エンディング発動済み) return false; const 人口 = 住民リスト.filter(h => !h.消滅フラグ).length; if (人口 < 777) return false; const h = new Date().getHours(); if (h < 0 || h >= 3) return false; const 経過日 = (Date.now() - 初回起動日取得()) / (1000 * 60 * 60 * 24); if (経過日 < 7) return false; if (Math.random() > 1/1000) return false; return true; }
+
+// ══════════════════════════════════════════════════════
+//  隠しエンディング「創造主の記録」
+// ══════════════════════════════════════════════════════
+
+function 初回起動日取得() {
+  try {
+    let d = localStorage.getItem('文字生態系_初回');
+    if (!d) { d = Date.now().toString(); localStorage.setItem('文字生態系_初回', d); }
+    return parseInt(d, 10);
+  } catch(e) { return Date.now(); }
+}
+
+function 通常エンディング条件チェック() {
+  if (エンディング発動済み) return false;
+  const 人口 = 住民リスト.filter(h => !h.消滅フラグ).length;
+  if (人口 < 777) return false;
+  const h = new Date().getHours();
+  if (h < 0 || h >= 3) return false;
+  const 経過日 = (Date.now() - 初回起動日取得()) / (1000 * 60 * 60 * 24);
+  if (経過日 < 7) return false;
+  if (Math.random() > 1/1000) return false;
+  return true;
+}
+
 function エンディング発動() {
-  if (エンディング発動済み) return; エンディング発動済み = true;
+  if (エンディング発動済み) return;
+  エンディング発動済み = true;
   try { localStorage.setItem('文字生態系_ED', '1'); } catch(e) {}
+
+  // 世界停止
   住民リスト.forEach(h => { h.vx = 0; h.vy = 0; h.定着済み = true; });
-  const $幕 = document.getElementById('砂嵐幕'); $幕.classList.add('on'); AC初期化(); 砂嵐音開始();
-  const 砂嵐C = document.getElementById('砂嵐Canvas'); const 文字C = document.getElementById('文字舞台');
-  砂嵐C.width = 文字C.width = window.innerWidth; 砂嵐C.height = 文字C.height = window.innerHeight;
-  const 砂嵐ctx = 砂嵐C.getContext('2d'); const 文字ctx = 文字C.getContext('2d'); const W = 砂嵐C.width, H = 砂嵐C.height;
-  let 砂嵐RAF; let 砂嵐終了 = false;
-  function 砂嵐ループ() { if (砂嵐終了) return; 砂嵐RAF = requestAnimationFrame(砂嵐ループ); const img = 砂嵐ctx.createImageData(W, H); const d = img.data; for (let i = 0; i < d.length; i += 4) { const v = Math.random() < 0.52 ? Math.floor(Math.random() * 180 + 40) : Math.floor(Math.random() * 60); d[i] = d[i+1] = d[i+2] = v; d[i+3] = Math.random() < 0.04 ? 0 : 210; } 砂嵐ctx.putImageData(img, 0, 0); }
+
+  const $幕 = document.getElementById('砂嵐幕');
+  $幕.classList.add('on');
+
+  // 砂嵐音開始
+  AC初期化();
+  砂嵐音開始();
+
+  const 砂嵐C = document.getElementById('砂嵐Canvas');
+  const 文字C = document.getElementById('文字舞台');
+  砂嵐C.width  = 文字C.width  = window.innerWidth;
+  砂嵐C.height = 文字C.height = window.innerHeight;
+  const 砂嵐ctx = 砂嵐C.getContext('2d');
+  const 文字ctx = 文字C.getContext('2d');
+
+  const W = 砂嵐C.width, H = 砂嵐C.height;
+
+  // --- 砂嵐描画ループ ---
+  let 砂嵐RAF;
+  let 砂嵐終了 = false;
+  function 砂嵐ループ() {
+    if (砂嵐終了) return;
+    砂嵐RAF = requestAnimationFrame(砂嵐ループ);
+    const img = 砂嵐ctx.createImageData(W, H);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const v = Math.random() < 0.52 ? Math.floor(Math.random() * 180 + 40) : Math.floor(Math.random() * 60);
+      d[i] = d[i+1] = d[i+2] = v;
+      d[i+3] = Math.random() < 0.04 ? 0 : 210;
+    }
+    砂嵐ctx.putImageData(img, 0, 0);
+  }
   砂嵐ループ();
-  const 最終文 = ['きみがつくってくれた', 'このせかいで', 'ぼくたちはいきている']; const 元文字 = [...最終文.join('')];
-  const 文字粒子 = 元文字.map((c, i) => ({ 文字: c, x: 80 + Math.random() * (W - 160), y: 80 + Math.random() * (H - 160), 目標x: 0, 目標y: 0, vx: 0, vy: 0, アルファ: 0, フェーズ: 'scatter' }));
-  const フォントSz = Math.min(Math.floor(W / 12), 28); const 行高 = フォントSz * 2.2; const 全行y = [H/2 - 行高, H/2, H/2 + 行高];
-  function 最終位置計算() { let idx = 0; 最終文.forEach((行, li) => { const 文字群 = [...行]; const 全幅 = 文字群.length * フォントSz * 1.3; 文字群.forEach((c, ci) => { if (idx < 文字粒子.length) { 文字粒子[idx].目標x = W/2 - 全幅/2 + ci * フォントSz * 1.3 + フォントSz * 0.65; 文字粒子[idx].目標y = 全行y[li]; 文字粒子[idx].文字 = c; idx++; } }); }); }
-  最終位置計算(); let 前時 = performance.now(); let 文字フェーズ = 'scatter'; let フェーズ開始 = performance.now(); let フェードRAF;
+
+  // --- 文字演出 ---
+  // アナグラム元文字のランダム配置
+  const 最終文 = ['きみがつくってくれた', 'このせかいで', 'ぼくたちはいきている'];
+  const 元文字 = [...最終文.join('')];
+  const 全最終 = [...最終文.join('')];
+
+  // 各文字のオブジェクト
+  const 文字粒子 = 元文字.map((c, i) => ({
+    文字: c,
+    x: 80 + Math.random() * (W - 160),
+    y: 80 + Math.random() * (H - 160),
+    目標x: 0, 目標y: 0,
+    vx: 0, vy: 0,
+    アルファ: 0,
+    フェーズ: 'scatter', // scatter → move → final
+  }));
+
+  // 最終位置を計算（3行センタリング）
+  const フォントSz = Math.min(Math.floor(W / 12), 28);
+  const 行高 = フォントSz * 2.2;
+  const 全行y = [H/2 - 行高, H/2, H/2 + 行高];
+
+  function 最終位置計算() {
+    let idx = 0;
+    最終文.forEach((行, li) => {
+      const 文字群 = [...行];
+      const 全幅 = 文字群.length * フォントSz * 1.3;
+      文字群.forEach((c, ci) => {
+        if (idx < 文字粒子.length) {
+          文字粒子[idx].目標x = W/2 - 全幅/2 + ci * フォントSz * 1.3 + フォントSz * 0.65;
+          文字粒子[idx].目標y = 全行y[li];
+          文字粒子[idx].文字 = c;
+          idx++;
+        }
+      });
+    });
+  }
+  最終位置計算();
+
+  let 経過ms = 0;
+  let 前時 = performance.now();
+  let 文字フェーズ = 'scatter'; // scatter(5s) → move(5s) → fade_msgs(5s) → final
+  let フェーズ開始 = performance.now();
+  let フェードRAF;
+
   function 文字ループ(now) {
-    フェードRAF = requestAnimationFrame(文字ループ); const 経過 = now - フェーズ開始;
-    文字ctx.clearRect(0, 0, W, H); 文字ctx.font = `${フォントSz}px 'Hiragino Mincho ProN','Yu Mincho',serif`; 文字ctx.textAlign = 'center'; 文字ctx.textBaseline = 'middle';
+    フェードRAF = requestAnimationFrame(文字ループ);
+    const dt = now - 前時; 前時 = now;
+    const 経過 = now - フェーズ開始;
+
+    文字ctx.clearRect(0, 0, W, H);
+    文字ctx.font = `${フォントSz}px 'Hiragino Mincho ProN','Yu Mincho',serif`;
+    文字ctx.textAlign = 'center'; 文字ctx.textBaseline = 'middle';
+
     if (文字フェーズ === 'scatter') {
-      文字粒子.forEach((p, i) => { p.アルファ = Math.min(1, 経過 / 2500 * (0.5 + Math.random() * 0.5)); p.x += (Math.random() - 0.5) * 0.4; p.y += (Math.random() - 0.5) * 0.4; 文字ctx.save(); 文字ctx.globalAlpha = p.アルファ * 0.85; 文字ctx.fillStyle = `rgba(220,200,160,${p.アルファ})`; 文字ctx.shadowColor = 'rgba(200,180,120,.5)'; 文字ctx.shadowBlur = 6; 文字ctx.fillText(p.文字, p.x, p.y); 文字ctx.restore(); });
+      // ゆっくりフェードイン＋漂い
+      文字粒子.forEach((p, i) => {
+        p.アルファ = Math.min(1, 経過 / 2500 * (0.5 + Math.random() * 0.5));
+        p.x += (Math.random() - 0.5) * 0.4;
+        p.y += (Math.random() - 0.5) * 0.4;
+        文字ctx.save();
+        文字ctx.globalAlpha = p.アルファ * 0.85;
+        文字ctx.fillStyle = `rgba(220,200,160,${p.アルファ})`;
+        文字ctx.shadowColor = 'rgba(200,180,120,.5)';
+        文字ctx.shadowBlur = 6;
+        文字ctx.fillText(p.文字, p.x, p.y);
+        文字ctx.restore();
+      });
       if (経過 > 5000) { 文字フェーズ = 'move'; フェーズ開始 = now; }
+
     } else if (文字フェーズ === 'move') {
-      const t = Math.min(1, 経過 / 5000); const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
-      文字粒子.forEach((p, i) => { p.x += (p.目標x - p.x) * 0.04; p.y += (p.目標y - p.y) * 0.04; 文字ctx.save(); 文字ctx.globalAlpha = 0.85 + ease * 0.15; 文字ctx.fillStyle = `rgba(220,200,160,0.9)`; 文字ctx.shadowColor = 'rgba(200,170,100,.7)'; 文字ctx.shadowBlur = 8 + ease * 6; 文字ctx.fillText(p.文字, p.x, p.y); 文字ctx.restore(); });
+      // アナグラム移動
+      const t = Math.min(1, 経過 / 5000);
+      const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      文字粒子.forEach((p, i) => {
+        p.x += (p.目標x - p.x) * 0.04;
+        p.y += (p.目標y - p.y) * 0.04;
+        文字ctx.save();
+        文字ctx.globalAlpha = 0.85 + ease * 0.15;
+        文字ctx.fillStyle = `rgba(220,200,160,0.9)`;
+        文字ctx.shadowColor = 'rgba(200,170,100,.7)';
+        文字ctx.shadowBlur = 8 + ease * 6;
+        文字ctx.fillText(p.文字, p.x, p.y);
+        文字ctx.restore();
+      });
       if (経過 > 5000) { 文字フェーズ = 'fade_msgs'; フェーズ開始 = now; フェードメッセージ開始(); }
+
     } else if (文字フェーズ === 'fade_msgs') {
-      文字粒子.forEach(p => { 文字ctx.save(); 文字ctx.globalAlpha = 1.0; 文字ctx.fillStyle = `rgba(220,200,160,0.9)`; 文字ctx.shadowColor = 'rgba(200,170,100,.7)'; 文字ctx.shadowBlur = 10; 文字ctx.fillText(p.文字, p.x, p.y); 文字ctx.restore(); });
-      if (経過 > 5000) { cancelAnimationFrame(フェードRAF); 砂嵐終了 = true; cancelAnimationFrame(砂嵐RAF); 最終画面へ(); }
+      // 文字粒子を残しつつメッセージフェード
+      文字粒子.forEach(p => {
+        文字ctx.save();
+        文字ctx.globalAlpha = 1.0;
+        文字ctx.fillStyle = `rgba(220,200,160,0.9)`;
+        文字ctx.shadowColor = 'rgba(200,170,100,.7)';
+        文字ctx.shadowBlur = 10;
+        文字ctx.fillText(p.文字, p.x, p.y);
+        文字ctx.restore();
+      });
+      if (経過 > 5000) {
+        cancelAnimationFrame(フェードRAF);
+        砂嵐終了 = true;
+        cancelAnimationFrame(砂嵐RAF);
+        最終画面へ();
+      }
     }
   }
   requestAnimationFrame(文字ループ);
-  document.getElementById('上部').style.pointerEvents = 'none'; document.getElementById('下部').style.pointerEvents = 'none';
+
+  // UIを無効化
+  document.getElementById('上部').style.pointerEvents = 'none';
+  document.getElementById('下部').style.pointerEvents  = 'none';
 }
-function フェードメッセージ開始() { const $領域 = document.getElementById('フェードメッセージ'); const msgs = ['msg1','msg2','msg3']; $領域.style.opacity = '1'; msgs.forEach((id, i) => { setTimeout(() => { document.getElementById(id).classList.add('見える'); }, i * 1500 + 400); }); }
-function 最終画面へ() { const $幕 = document.getElementById('砂嵐幕'); $幕.style.transition = 'opacity 1.5s'; $幕.style.opacity = '0'; 砂嵐音停止(1.5); setTimeout(() => { $幕.classList.remove('on'); $幕.style.opacity = ''; $幕.style.transition = ''; document.getElementById('最終画面').classList.add('on'); document.getElementById('上部').style.pointerEvents = ''; document.getElementById('下部').style.pointerEvents = ''; }, 1500); }
-document.getElementById('戻るボタン').addEventListener('click', () => { document.getElementById('最終画面').classList.remove('on'); 状態更新('創造主よ、またいつでも。この世界はあなたを待っている'); });
+
+function フェードメッセージ開始() {
+  const $領域 = document.getElementById('フェードメッセージ');
+  const msgs  = ['msg1','msg2','msg3'];
+  $領域.style.opacity = '1';
+  msgs.forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('見える');
+    }, i * 1500 + 400);
+  });
+}
+
+function 最終画面へ() {
+  const $幕 = document.getElementById('砂嵐幕');
+  $幕.style.transition = 'opacity 1.5s';
+  $幕.style.opacity = '0';
+  // 砂嵐音フェードアウト（映像と同期）
+  砂嵐音停止(1.5);
+  setTimeout(() => {
+    $幕.classList.remove('on');
+    $幕.style.opacity = '';
+    $幕.style.transition = '';
+    document.getElementById('最終画面').classList.add('on');
+    document.getElementById('上部').style.pointerEvents = '';
+    document.getElementById('下部').style.pointerEvents  = '';
+  }, 1500);
+}
+
+document.getElementById('戻るボタン').addEventListener('click', () => {
+  document.getElementById('最終画面').classList.remove('on');
+  状態更新('創造主よ、またいつでも。この世界はあなたを待っている');
+});
+
+// ══════════════════════════════════════════════════════
+//  住人クラス
+// ══════════════════════════════════════════════════════
 class 住人 {
-  constructor(文字, 単語, x, y) { this.文字 = 文字; this.単語 = 単語; this.x = x; this.y = y; this.vx = (Math.random()-.5)*2; this.vy = (Math.random()-.5)*2; this.サイズ = K.基本サイズ; this.目標サイズ = K.基本サイズ; this.色相 = 色相取得(単語); this.アルファ = 0; this.震え = 0; this.定着カウント = 0; this.定着済み = false; this.呼吸位相 = Math.random()*Math.PI*2; this.呼吸速度 = .02+Math.random()*.015; this.代謝タイマー = K.代謝周期最小+Math.random()*(K.代謝周期最大-K.代謝周期最小); this.齢 = 0; this.遠征中 = false; this._遠征目標 = null; this.消滅フラグ = false; this.消滅透明度 = 1; this.属性 = 属性判定(文字); this.道路 = K.道路文字.has(文字); this.新参 = !既知文字.has(文字); this.新参タイマー = this.新参 ? 160 : 0; this._陣形割当 = null; this.エモート発火 = 0; this.繁殖タイマー = Math.random()*K.繁殖間隔; if(this.新参) 既知文字.add(文字); 文字頻度[文字] = (文字頻度[文字]||0)+1; this.更新サイズ(); }
-  更新サイズ() { const n = 文字頻度[this.文字]||1; this.目標サイズ = Math.min(K.基本サイズ + n*K.成長率, K.最大サイズ); }
+  constructor(文字, 単語, x, y) {
+    this.文字  = 文字;
+    this.単語  = 単語;
+    this.x = x; this.y = y;
+    this.vx = (Math.random()-.5)*2;
+    this.vy = (Math.random()-.5)*2;
+    this.サイズ = K.基本サイズ;
+    this.目標サイズ = K.基本サイズ;
+    this.色相  = 色相取得(単語);
+    this.アルファ = 0;
+    this.震え  = 0;
+    this.定着カウント = 0;
+    this.定着済み = false;
+    this.呼吸位相 = Math.random()*Math.PI*2;
+    this.呼吸速度 = .02+Math.random()*.015;
+    this.代謝タイマー = K.代謝周期最小+Math.random()*(K.代謝周期最大-K.代謝周期最小);
+    this.齢 = 0;
+    this.遠征中 = false;
+    this._遠征目標 = null;
+    this.消滅フラグ = false;
+    this.消滅透明度 = 1;
+    this.属性 = 属性判定(文字);
+    this.道路 = K.道路文字.has(文字);
+    this.新参 = !既知文字.has(文字);
+    this.新参タイマー = this.新参 ? 160 : 0;
+    this._陣形割当 = null; // {リーダー, オフセット}
+    this.エモート発火 = 0;
+    this.繁殖タイマー = Math.random()*K.繁殖間隔;
+    if(this.新参) 既知文字.add(文字);
+    文字頻度[文字] = (文字頻度[文字]||0)+1;
+    this.更新サイズ();
+  }
+  更新サイズ() {
+    const n = 文字頻度[this.文字]||1;
+    this.目標サイズ = Math.min(K.基本サイズ + n*K.成長率, K.最大サイズ);
+  }
   get 大黒柱() { return this.目標サイズ > 16; }
   get 斥力半径() { return this.サイズ * K.斥力半径倍率; }
 }
-function 属性判定(文字) { if(K.危険文字.has(文字)) return '危険'; if(K.安住文字.has(文字)) return '安住'; if(K.戦文字.has(文字)) return '戦'; if(K.資源文字.has(文字)) return '資源'; return '普通'; }
-function 色相取得(単語) { if(!一族色Map[単語]) 一族色Map[単語] = Math.floor(Math.random()*360); return 一族色Map[単語]; }
-function 陣形更新() { const リーダー群 = 住民リスト.filter(h => !h.消滅フラグ && (h.属性==='安住'||h.属性==='危険') && h.大黒柱 ); const 候補 = 住民リスト.filter(h => !h.消滅フラグ && !h.遠征中 && !h._陣形割当 && (h.属性==='普通'||h.属性==='戦') && h.定着カウント < K.定着カウント必要 ); for(const リーダー of リーダー群) { const テンプレ = リーダー.属性==='安住' ? K.家陣形 : K.剣陣形; const セル = K.基本サイズ * 2.2; let マスIdx = 0; for(const h of 候補) { if(マスIdx >= テンプレ.length) break; const dx=リーダー.x-h.x, dy=リーダー.y-h.y; if(Math.sqrt(dx*dx+dy*dy) > 220) continue; if(h._陣形割当) continue; h._陣形割当 = { リーダー, ox: テンプレ[マスIdx][0]*セル, oy: テンプレ[マスIdx][1]*セル, }; マスIdx++; } } }
+
+function 属性判定(文字) {
+  if(K.危険文字.has(文字)) return '危険';
+  if(K.安住文字.has(文字)) return '安住';
+  if(K.戦文字.has(文字))   return '戦';
+  if(K.資源文字.has(文字)) return '資源';
+  return '普通';
+}
+function 色相取得(単語) {
+  if(!一族色Map[単語]) 一族色Map[単語] = Math.floor(Math.random()*360);
+  return 一族色Map[単語];
+}
+
+// ══════════════════════════════════════════════════════
+//  陣形システム  ── 文字が集まってカタチを作る
+// ══════════════════════════════════════════════════════
+function 陣形更新() {
+  // 安住文字→家陣形、危険文字→剣陣形
+  const リーダー群 = 住民リスト.filter(h =>
+    !h.消滅フラグ && (h.属性==='安住'||h.属性==='危険') && h.大黒柱
+  );
+  const 候補 = 住民リスト.filter(h =>
+    !h.消滅フラグ && !h.遠征中 && !h._陣形割当 &&
+    (h.属性==='普通'||h.属性==='戦') && h.定着カウント < K.定着カウント必要
+  );
+
+  for(const リーダー of リーダー群) {
+    const テンプレ = リーダー.属性==='安住' ? K.家陣形 : K.剣陣形;
+    const セル = K.基本サイズ * 2.2;
+    // 近くの未割当住民を陣形マスに誘導
+    let マスIdx = 0;
+    for(const h of 候補) {
+      if(マスIdx >= テンプレ.length) break;
+      const dx=リーダー.x-h.x, dy=リーダー.y-h.y;
+      if(Math.sqrt(dx*dx+dy*dy) > 220) continue;
+      if(h._陣形割当) continue;
+      h._陣形割当 = {
+        リーダー,
+        ox: テンプレ[マスIdx][0]*セル,
+        oy: テンプレ[マスIdx][1]*セル,
+      };
+      マスIdx++;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  物理ステップ
+// ══════════════════════════════════════════════════════
 function 物理ステップ(h, 倍率) {
-  if(h.消滅フラグ) { h.消滅透明度 -= 0.045 * 倍率; return; }
-  if(マウス中 && !TL中) { h.サイズ += (h.目標サイズ - h.サイズ)*0.05; h.呼吸位相 += h.呼吸速度*倍率; if(h.アルファ<1) h.アルファ=Math.min(1,h.アルファ+0.04); h.齢 += 倍率; return; }
+  if(h.消滅フラグ) {
+    h.消滅透明度 -= 0.045 * 倍率;
+    return;
+  }
+
+  if(マウス中 && !TL中) {
+    h.サイズ += (h.目標サイズ - h.サイズ)*0.05;
+    h.呼吸位相 += h.呼吸速度*倍率;
+    if(h.アルファ<1) h.アルファ=Math.min(1,h.アルファ+0.04);
+    h.齢 += 倍率;
+    return;
+  }
+
   let ax=0,ay=0;
-  if(h._陣形割当 && !h.定着済み) { const r = h._陣形割当.リーダー; if(!r.消滅フラグ) { const tx = r.x + h._陣形割当.ox; const ty = r.y + h._陣形割当.oy; const dx=tx-h.x, dy=ty-h.y; const d=Math.sqrt(dx*dx+dy*dy)+0.1; if(d>2) { ax+=(dx/d)*K.陣形引力*d*0.04; ay+=(dy/d)*K.陣形引力*d*0.04; } if(d<4) { h.定着済み=true; h.vx=0;h.vy=0; } } else { h._陣形割当=null; } }
-  for(const b of 住民リスト) { if(b===h||b.消滅フラグ) continue; const dx=h.x-b.x, dy=h.y-b.y; const d2=dx*dx+dy*dy; const 最小d=h.斥力半径+b.斥力半径; if(d2 < 最小d*最小d && d2>0.01) { const d=Math.sqrt(d2); const 強=(最小d-d)/d*K.斥力係数; ax+=(dx/d)*強; ay+=(dy/d)*強; } }
-  if(!h.定着済み) { for(const b of 住民リスト) { if(b===h||b.消滅フラグ) continue; const dx=b.x-h.x,dy=b.y-h.y; const d=Math.sqrt(dx*dx+dy*dy)+0.1; if(d>300) continue; if(b.単語===h.単語 && d>h.斥力半径*3 && d<200) { ax+=(dx/d)*0.008; ay+=(dy/d)*0.008; } if(b.属性==='安住' && b.大黒柱 && d<K.陣形引力半径*1.5) { ax+=(dx/d)*0.006; ay+=(dy/d)*0.006; } if(b.属性==='危険' && h.属性==='普通' && d<100) { ax-=(dx/d)*0.018; ay-=(dy/d)*0.018; if(d<50 && h.エモート発火===0) { エモート生成(h.x,h.y,Math.random()<.5?'！':'💦'); h.エモート発火=80; } } if(b.道路 && d>10 && d<120) { ax+=(dx/d)*0.012; ay+=(dy/d)*0.012; } } }
-  if(h.遠征中 && h._遠征目標 && !h._遠征目標.消滅フラグ) { const t=h._遠征目標; const dx=t.x-h.x,dy=t.y-h.y; const d=Math.sqrt(dx*dx+dy*dy)+0.1; ax+=(dx/d)*0.22; ay+=(dy/d)*0.22; if(Math.random()<0.06 && 足跡リスト.length < K.足跡最大) 足跡リスト.push({x:h.x,y:h.y,齢:0}); }
-  h.vx=(h.vx+ax)*K.速度減衰; h.vy=(h.vy+ay)*K.速度減衰; const spd=Math.sqrt(h.vx*h.vx+h.vy*h.vy); if(spd>4){h.vx=h.vx/spd*4;h.vy=h.vy/spd*4;}
-  if(!h.遠征中) { if(spd<K.定着速度閾値) { h.定着カウント+=倍率; if(h.定着カウント>=K.定着カウント必要) { h.定着済み=true; h.vx=0; h.vy=0; if(Math.random()<0.35) エモート生成(h.x,h.y,Math.random()<.5?'🏡':'⛺'); } } else h.定着カウント=Math.max(0,h.定着カウント-1); }
-  h.x+=h.vx*倍率; h.y+=h.vy*倍率; const pad=h.サイズ+3; if(h.x<pad){h.x=pad;h.vx*=-.55;} if(h.x>canvas.width-pad){h.x=canvas.width-pad;h.vx*=-.55;} if(h.y<pad){h.y=pad;h.vy*=-.55;} if(h.y>canvas.height-50){h.y=canvas.height-50;h.vy*=-.55;}
-  if(h.震え>0.1) h.震え*=0.88; else h.震え=0; h.呼吸位相+=h.呼吸速度*倍率; h.サイズ+=(h.目標サイズ-h.サイズ)*0.05*倍率; if(h.アルファ<1) h.アルファ=Math.min(1,h.アルファ+0.025*倍率); if(h.エモート発火>0) h.エモート発火-=倍率;
-  h.繁殖タイマー-=倍率; if(h.繁殖タイマー<=0) { h.繁殖タイマー=K.繁殖間隔+Math.random()*200; if(h.定着済み && Math.random()<K.繁殖確率 && 住民リスト.filter(x=>!x.消滅フラグ).length < K.最大住民) { const 子文字 = 子供文字生成(h); const 子 = new 住人(子文字, h.単語, h.x+(Math.random()-.5)*20, h.y+(Math.random()-.5)*20); 住民リスト.push(子); for(const b of 住民リスト) { if(b.文字===子文字&&!b.消滅フラグ) b.更新サイズ(); } 人口増減追加(+1,'#2d7a4a'); } }
-  h.代謝タイマー-=倍率; if(h.代謝タイマー<=0) { h.代謝タイマー=K.代謝周期最小+Math.random()*(K.代謝周期最大-K.代謝周期最小); if(h.定着済み && 畑リスト.length<K.畑最大) { 畑リスト.push({x:h.x+(Math.random()-.5)*18,y:h.y+h.サイズ/2+6,文字:'、',齢:0,成熟:0}); } }
-  h.新参タイマー-=倍率; h.齢+=倍率;
+
+  // 陣形引力
+  if(h._陣形割当 && !h.定着済み) {
+    const r = h._陣形割当.リーダー;
+    if(!r.消滅フラグ) {
+      const tx = r.x + h._陣形割当.ox;
+      const ty = r.y + h._陣形割当.oy;
+      const dx=tx-h.x, dy=ty-h.y;
+      const d=Math.sqrt(dx*dx+dy*dy)+0.1;
+      if(d>2) { ax+=(dx/d)*K.陣形引力*d*0.04; ay+=(dy/d)*K.陣形引力*d*0.04; }
+      if(d<4) { h.定着済み=true; h.vx=0;h.vy=0; }
+    } else { h._陣形割当=null; }
+  }
+
+  // 斥力（全住民間）
+  for(const b of 住民リスト) {
+    if(b===h||b.消滅フラグ) continue;
+    const dx=h.x-b.x, dy=h.y-b.y;
+    const d2=dx*dx+dy*dy;
+    const 最小d=h.斥力半径+b.斥力半径;
+    if(d2 < 最小d*最小d && d2>0.01) {
+      const d=Math.sqrt(d2);
+      const 強=(最小d-d)/d*K.斥力係数;
+      ax+=(dx/d)*強; ay+=(dy/d)*強;
+    }
+  }
+
+  // 属性引力・斥力
+  if(!h.定着済み) {
+    for(const b of 住民リスト) {
+      if(b===h||b.消滅フラグ) continue;
+      const dx=b.x-h.x,dy=b.y-h.y;
+      const d=Math.sqrt(dx*dx+dy*dy)+0.1;
+      if(d>300) continue;
+      // 同単語の引き合い
+      if(b.単語===h.単語 && d>h.斥力半径*3 && d<200) {
+        ax+=(dx/d)*0.008; ay+=(dy/d)*0.008;
+      }
+      // 安住文字の引力圏
+      if(b.属性==='安住' && b.大黒柱 && d<K.陣形引力半径*1.5) {
+        ax+=(dx/d)*0.006; ay+=(dy/d)*0.006;
+      }
+      // 危険文字に普通が逃げる
+      if(b.属性==='危険' && h.属性==='普通' && d<100) {
+        ax-=(dx/d)*0.018; ay-=(dy/d)*0.018;
+        if(d<50 && h.エモート発火===0) {
+          エモート生成(h.x,h.y,Math.random()<.5?'！':'💦');
+          h.エモート発火=80;
+        }
+      }
+      // 道路引力
+      if(b.道路 && d>10 && d<120) {
+        ax+=(dx/d)*0.012; ay+=(dy/d)*0.012;
+      }
+    }
+  }
+
+  // 遠征移動
+  if(h.遠征中 && h._遠征目標 && !h._遠征目標.消滅フラグ) {
+    const t=h._遠征目標;
+    const dx=t.x-h.x,dy=t.y-h.y;
+    const d=Math.sqrt(dx*dx+dy*dy)+0.1;
+    ax+=(dx/d)*0.22; ay+=(dy/d)*0.22;
+    // 足跡
+    if(Math.random()<0.06 && 足跡リスト.length < K.足跡最大)
+      足跡リスト.push({x:h.x,y:h.y,齢:0});
+  }
+
+  // 速度更新
+  h.vx=(h.vx+ax)*K.速度減衰;
+  h.vy=(h.vy+ay)*K.速度減衰;
+  const spd=Math.sqrt(h.vx*h.vx+h.vy*h.vy);
+  if(spd>4){h.vx=h.vx/spd*4;h.vy=h.vy/spd*4;}
+
+  // 定着判定
+  if(!h.遠征中) {
+    if(spd<K.定着速度閾値) {
+      h.定着カウント+=倍率;
+      if(h.定着カウント>=K.定着カウント必要) {
+        h.定着済み=true; h.vx=0; h.vy=0;
+        if(Math.random()<0.35) エモート生成(h.x,h.y,Math.random()<.5?'🏡':'⛺');
+      }
+    } else h.定着カウント=Math.max(0,h.定着カウント-1);
+  }
+
+  h.x+=h.vx*倍率; h.y+=h.vy*倍率;
+
+  // 壁バウンド
+  const pad=h.サイズ+3;
+  if(h.x<pad){h.x=pad;h.vx*=-.55;}
+  if(h.x>canvas.width-pad){h.x=canvas.width-pad;h.vx*=-.55;}
+  if(h.y<pad){h.y=pad;h.vy*=-.55;}
+  if(h.y>canvas.height-50){h.y=canvas.height-50;h.vy*=-.55;}
+
+  // 震え減衰
+  if(h.震え>0.1) h.震え*=0.88; else h.震え=0;
+
+  // 呼吸
+  h.呼吸位相+=h.呼吸速度*倍率;
+  h.サイズ+=(h.目標サイズ-h.サイズ)*0.05*倍率;
+  if(h.アルファ<1) h.アルファ=Math.min(1,h.アルファ+0.025*倍率);
+  if(h.エモート発火>0) h.エモート発火-=倍率;
+
+  // 繁殖（人口増殖）
+  h.繁殖タイマー-=倍率;
+  if(h.繁殖タイマー<=0) {
+    h.繁殖タイマー=K.繁殖間隔+Math.random()*200;
+    if(h.定着済み && Math.random()<K.繁殖確率 &&
+       住民リスト.filter(x=>!x.消滅フラグ).length < K.最大住民) {
+      const 子文字 = 子供文字生成(h);
+      const 子 = new 住人(子文字, h.単語, h.x+(Math.random()-.5)*20, h.y+(Math.random()-.5)*20);
+      住民リスト.push(子);
+      for(const b of 住民リスト) {
+        if(b.文字===子文字&&!b.消滅フラグ) b.更新サイズ();
+      }
+      人口増減追加(+1,'#2d7a4a');
+    }
+  }
+
+  // 代謝（畑）
+  h.代謝タイマー-=倍率;
+  if(h.代謝タイマー<=0) {
+    h.代謝タイマー=K.代謝周期最小+Math.random()*(K.代謝周期最大-K.代謝周期最小);
+    if(h.定着済み && 畑リスト.length<K.畑最大) {
+      畑リスト.push({x:h.x+(Math.random()-.5)*18,y:h.y+h.サイズ/2+6,文字:'、',齢:0,成熟:0});
+    }
+  }
+
+  h.新参タイマー-=倍率;
+  h.齢+=倍率;
 }
-function 子供文字生成(親) { if(Math.random()<0.3) return K.造語音節[Math.floor(Math.random()*K.造語音節.length)]; return 親.文字; }
-function 遠征処理(倍率) { 狩りタイマー-=倍率; if(狩りタイマー>0) return; 狩りタイマー=K.狩り間隔; const 生存=住民リスト.filter(h=>!h.消滅フラグ); const ターゲット=生存.filter(h=>(h.属性==='資源'||h.属性==='危険')&&!h.遠征中); if(!ターゲット.length) return; const 志願者=生存.filter(h=>h.定着済み&&!h.遠征中&&(h.属性==='普通'||h.属性==='戦')&&Math.random()<0.25); if(志願者.length<K.遠征隊サイズ) return; const tgt=ターゲット[Math.floor(Math.random()*ターゲット.length)]; const 隊員=[]; for(let i=0;i<K.遠征隊サイズ&&i<志願者.length;i++){ 志願者[i].遠征中=true; 志願者[i].定着済み=false; 志願者[i]._遠征目標=tgt; 志願者[i].定着カウント=0; 志願者[i]._陣形割当=null; 隊員.push(志願者[i]); } 遠征隊リスト.push({隊員,ターゲット:tgt,猶予:700}); }
-function 遠征更新(倍率) { 遠征隊リスト=遠征隊リスト.filter(隊=>{ if(隊.ターゲット.消滅フラグ||隊.猶予<=0){ for(const h of 隊.隊員){h.遠征中=false;h._遠征目標=null;h.vx=(Math.random()-.5);h.vy=(Math.random()-.5);} return false; } 隊.猶予-=倍率; for(const h of 隊.隊員){ if(h.消滅フラグ) continue; const dx=隊.ターゲット.x-h.x,dy=隊.ターゲット.y-h.y; const d=Math.sqrt(dx*dx+dy*dy); if(d<14) { 火花生成(h.x,h.y,16,'#c84b2f'); 隊.ターゲット.震え=7; h.震え=5; if(隊.ターゲット.属性==='資源') { 繁殖バースト(h.x,h.y,3); 隊.ターゲット.消滅フラグ=true; 状態更新(`「${h.文字}」の狩りが成功！繁栄が増した`); エモート生成(h.x,h.y,'♪'); } else { const 勝=Math.random()<0.42; if(勝){ 繁殖バースト(h.x,h.y,2); 隊.ターゲット.消滅フラグ=true; 状態更新(`「${隊.ターゲット.文字}」を撃破！英雄の凱旋`); エモート生成(h.x,h.y,'👑'); 人口増減追加(+2,'#2d7a4a'); } else { 昇天開始(h); h.消滅フラグ=true; 状態更新(`「${h.文字}」が「${隊.ターゲット.文字}」に倒れた…`); 人口増減追加(-1,'#c84b2f'); } } for(const m of 隊.隊員){m.遠征中=false;m._遠征目標=null;} return false; } } return true; }); }
-function 繁殖バースト(x,y,数) { const 生存数=住民リスト.filter(h=>!h.消滅フラグ).length; for(let i=0;i<数;i++){ if(生存数+i>=K.最大住民) break; const 語=K.造語音節[Math.floor(Math.random()*K.造語音節.length)]; const h=new 住人(語,'resource_burst',x+(Math.random()-.5)*30,y+(Math.random()-.5)*30); 住民リスト.push(h); } 人口増減追加(数,'#2d7a4a'); }
-function 火花生成(x,y,数,色) { for(let i=0;i<数;i++){ if(火花リスト.length>=K.火花最大) break; const 角=Math.random()*Math.PI*2; const 速=1+Math.random()*3; 火花リスト.push({x,y,vx:Math.cos(角)*速,vy:Math.sin(角)*速,齢:0,色,r:1.5+Math.random()*1.5}); } }
-function エモート生成(x,y,記号) { if(エモートリスト.length>=K.エモート最大) return; エモートリスト.push({x,y,記号,齢:0,vy:-0.5}); }
-function 昇天開始(h) { if(昇天リスト.length>=K.昇天最大) return; 昇天リスト.push({x:h.x,y:h.y,文字:h.文字,色相:h.色相,サイズ:h.サイズ,齢:0,アルファ:1}); }
-function 人口増減追加(差,色) { if(人口増減表示.length>=K.人口表示最大) return; const x=canvas.width-50+( Math.random()-.5)*30; const y=canvas.height-60+(Math.random()-.5)*20; 人口増減表示.push({テキスト:(差>0?'+':'')+差,x,y:y,vy:-0.7,齢:0,色,アルファ:1}); }
-function 畑代謝(倍率) { for(const 芽 of 畑リスト) { 芽.齢+=倍率; 芽.成熟=Math.min(1,芽.齢/K.畑熟成フレーム); } const 熟=畑リスト.filter(a=>a.成熟>=1); if(熟.length>=4 && 住民リスト.filter(h=>!h.消滅フラグ).length<K.最大住民) { const 語=造語生成(); const 起=熟[0]; 生成(語,起.x,起.y-20); for(let i=0;i<Math.min(3,熟.length);i++) 畑リスト.splice(畑リスト.indexOf(熟[i]),1); 状態更新(`畑から「${語}」が芽吹いた`); } 畑リスト=畑リスト.filter(a=>a.齢<1800); }
-function 造語生成() { const s=K.造語音節,len=2+Math.floor(Math.random()*2); let w='';for(let i=0;i<len;i++) w+=s[Math.floor(Math.random()*s.length)]; return w; }
-function 生成(テキスト,強制X=null,強制Y=null) { const 単語=テキスト.trim(); if(!単語) return; const 文字群=[...単語]; const 生存数=住民リスト.filter(h=>!h.消滅フラグ).length; 文字群.forEach((文字,i)=>{ if(生存数+i>=K.最大住民) return; const x=強制X!==null?強制X:50+Math.random()*(canvas.width-100); const y=強制Y!==null?強制Y:60+Math.random()*(canvas.height*0.6); const h=new 住人(文字,単語,x,y); 住民リスト.push(h); for(const b of 住民リスト){if(b.文字===文字&&!b.消滅フラグ) b.更新サイズ();} if(h.新参){for(const b of 住民リスト){if(b!==h&&!b.消滅フラグ) b.震え=Math.max(b.震え,2);}} if(h.道路){h.定着済み=true;h.vx=0;h.vy=0;} 誕生音(i * 55); }); }
-function 昼夜モード() { const h=new Date().getHours(); if(h>=6&&h<18) return '昼'; if(h>=18&&h<20) return '夕'; return '夜'; }
-function 背景描画() { const m=昼夜モード(); let bg; if(m==='昼') bg='#f2ece0'; else if(m==='夕') { const p=Math.min(((new Date().getHours()-18)*60+new Date().getMinutes())/120,1); bg=lerp色('#f2ece0','#c86840',p); } else bg='#141a29'; ctx.fillStyle=bg; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.strokeStyle=m==='夜'?'rgba(80,120,200,.08)':'rgba(139,111,71,.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,canvas.height-44); ctx.lineTo(canvas.width,canvas.height-44); ctx.stroke(); }
+
+function 子供文字生成(親) {
+  // 造語or同文字
+  if(Math.random()<0.3) return K.造語音節[Math.floor(Math.random()*K.造語音節.length)];
+  return 親.文字;
+}
+
+// ══════════════════════════════════════════════════════
+//  遠征・戦闘
+// ══════════════════════════════════════════════════════
+function 遠征処理(倍率) {
+  狩りタイマー-=倍率;
+  if(狩りタイマー>0) return;
+  狩りタイマー=K.狩り間隔;
+  const 生存=住民リスト.filter(h=>!h.消滅フラグ);
+  const ターゲット=生存.filter(h=>(h.属性==='資源'||h.属性==='危険')&&!h.遠征中);
+  if(!ターゲット.length) return;
+  const 志願者=生存.filter(h=>h.定着済み&&!h.遠征中&&(h.属性==='普通'||h.属性==='戦')&&Math.random()<0.25);
+  if(志願者.length<K.遠征隊サイズ) return;
+  const tgt=ターゲット[Math.floor(Math.random()*ターゲット.length)];
+  const 隊員=[];
+  for(let i=0;i<K.遠征隊サイズ&&i<志願者.length;i++){
+    志願者[i].遠征中=true; 志願者[i].定着済み=false;
+    志願者[i]._遠征目標=tgt; 志願者[i].定着カウント=0; 志願者[i]._陣形割当=null;
+    隊員.push(志願者[i]);
+  }
+  遠征隊リスト.push({隊員,ターゲット:tgt,猶予:700});
+}
+
+function 遠征更新(倍率) {
+  遠征隊リスト=遠征隊リスト.filter(隊=>{
+    if(隊.ターゲット.消滅フラグ||隊.猶予<=0){
+      for(const h of 隊.隊員){h.遠征中=false;h._遠征目標=null;h.vx=(Math.random()-.5);h.vy=(Math.random()-.5);}
+      return false;
+    }
+    隊.猶予-=倍率;
+    for(const h of 隊.隊員){
+      if(h.消滅フラグ) continue;
+      const dx=隊.ターゲット.x-h.x,dy=隊.ターゲット.y-h.y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<14) {
+        // 衝突→火花
+        火花生成(h.x,h.y,16,'#c84b2f');
+        隊.ターゲット.震え=7; h.震え=5;
+        if(隊.ターゲット.属性==='資源') {
+          繁殖バースト(h.x,h.y,3);
+          隊.ターゲット.消滅フラグ=true;
+          状態更新(`「${h.文字}」の狩りが成功！繁栄が増した`);
+          エモート生成(h.x,h.y,'♪');
+        } else {
+          // 戦闘
+          const 勝=Math.random()<0.42;
+          if(勝){
+            繁殖バースト(h.x,h.y,2);
+            隊.ターゲット.消滅フラグ=true;
+            状態更新(`「${隊.ターゲット.文字}」を撃破！英雄の凱旋`);
+            エモート生成(h.x,h.y,'👑');
+            人口増減追加(+2,'#2d7a4a');
+          } else {
+            // 昇天
+            昇天開始(h);
+            h.消滅フラグ=true;
+            状態更新(`「${h.文字}」が「${隊.ターゲット.文字}」に倒れた…`);
+            人口増減追加(-1,'#c84b2f');
+          }
+        }
+        for(const m of 隊.隊員){m.遠征中=false;m._遠征目標=null;}
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+function 繁殖バースト(x,y,数) {
+  const 生存数=住民リスト.filter(h=>!h.消滅フラグ).length;
+  for(let i=0;i<数;i++){
+    if(生存数+i>=K.最大住民) break;
+    const 語=K.造語音節[Math.floor(Math.random()*K.造語音節.length)];
+    const h=new 住人(語,'resource_burst',x+(Math.random()-.5)*30,y+(Math.random()-.5)*30);
+    住民リスト.push(h);
+  }
+  人口増減追加(数,'#2d7a4a');
+}
+
+// ══════════════════════════════════════════════════════
+//  パーティクル系
+// ══════════════════════════════════════════════════════
+function 火花生成(x,y,数,色) {
+  for(let i=0;i<数;i++){
+    if(火花リスト.length>=K.火花最大) break;
+    const 角=Math.random()*Math.PI*2;
+    const 速=1+Math.random()*3;
+    火花リスト.push({x,y,vx:Math.cos(角)*速,vy:Math.sin(角)*速,齢:0,色,r:1.5+Math.random()*1.5});
+  }
+}
+
+function エモート生成(x,y,記号) {
+  if(エモートリスト.length>=K.エモート最大) return;
+  エモートリスト.push({x,y,記号,齢:0,vy:-0.5});
+}
+
+function 昇天開始(h) {
+  if(昇天リスト.length>=K.昇天最大) return;
+  昇天リスト.push({x:h.x,y:h.y,文字:h.文字,色相:h.色相,サイズ:h.サイズ,齢:0,アルファ:1});
+}
+
+function 人口増減追加(差,色) {
+  if(人口増減表示.length>=K.人口表示最大) return;
+  const x=canvas.width-50+( Math.random()-.5)*30;
+  const y=canvas.height-60+(Math.random()-.5)*20;
+  人口増減表示.push({テキスト:(差>0?'+':'')+差,x,y:y,vy:-0.7,齢:0,色,アルファ:1});
+}
+
+// ══════════════════════════════════════════════════════
+//  畑代謝
+// ══════════════════════════════════════════════════════
+function 畑代謝(倍率) {
+  for(const 芽 of 畑リスト) {
+    芽.齢+=倍率;
+    芽.成熟=Math.min(1,芽.齢/K.畑熟成フレーム);
+  }
+  const 熟=畑リスト.filter(a=>a.成熟>=1);
+  if(熟.length>=4 && 住民リスト.filter(h=>!h.消滅フラグ).length<K.最大住民) {
+    const 語=造語生成();
+    const 起=熟[0];
+    生成(語,起.x,起.y-20);
+    for(let i=0;i<Math.min(3,熟.length);i++) 畑リスト.splice(畑リスト.indexOf(熟[i]),1);
+    状態更新(`畑から「${語}」が芽吹いた`);
+  }
+  畑リスト=畑リスト.filter(a=>a.齢<1800);
+}
+
+function 造語生成() {
+  const s=K.造語音節,len=2+Math.floor(Math.random()*2);
+  let w='';for(let i=0;i<len;i++) w+=s[Math.floor(Math.random()*s.length)];
+  return w;
+}
+
+// ══════════════════════════════════════════════════════
+//  住民生成
+// ══════════════════════════════════════════════════════
+function 生成(テキスト,強制X=null,強制Y=null) {
+  const 単語=テキスト.trim();
+  if(!単語) return;
+  const 文字群=[...単語];
+  const 生存数=住民リスト.filter(h=>!h.消滅フラグ).length;
+  文字群.forEach((文字,i)=>{
+    if(生存数+i>=K.最大住民) return;
+    const x=強制X!==null?強制X:50+Math.random()*(canvas.width-100);
+    const y=強制Y!==null?強制Y:60+Math.random()*(canvas.height*0.6);
+    const h=new 住人(文字,単語,x,y);
+    住民リスト.push(h);
+    for(const b of 住民リスト){if(b.文字===文字&&!b.消滅フラグ) b.更新サイズ();}
+    if(h.新参){for(const b of 住民リスト){if(b!==h&&!b.消滅フラグ) b.震え=Math.max(b.震え,2);}}
+    if(h.道路){h.定着済み=true;h.vx=0;h.vy=0;}
+    // 誕生音（文字ごとに少しずらして鳴らす）
+    誕生音(i * 55);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  描画系
+// ══════════════════════════════════════════════════════
+function 昼夜モード() {
+  const h=new Date().getHours();
+  if(h>=6&&h<18) return '昼';
+  if(h>=18&&h<20) return '夕';
+  return '夜';
+}
+
+function 背景描画() {
+  const m=昼夜モード();
+  let bg;
+  if(m==='昼') bg='#f2ece0';
+  else if(m==='夕') { const p=Math.min(((new Date().getHours()-18)*60+new Date().getMinutes())/120,1); bg=lerp色('#f2ece0','#c86840',p); }
+  else bg='#141a29';
+  ctx.fillStyle=bg; ctx.fillRect(0,0,canvas.width,canvas.height);
+  // 地面線
+  ctx.strokeStyle=m==='夜'?'rgba(80,120,200,.08)':'rgba(139,111,71,.12)';
+  ctx.lineWidth=1; ctx.beginPath();
+  ctx.moveTo(0,canvas.height-44); ctx.lineTo(canvas.width,canvas.height-44); ctx.stroke();
+}
+
 function 住人描画(h) {
-  if(h.消滅透明度<=0) return; const 夜=昼夜モード()==='夜'; const 呼吸=(マウス中&&!TL中)?0:Math.sin(h.呼吸位相)*0.6; const sz=h.サイズ+呼吸; const x=h.x+(h.震え>0?(Math.random()-.5)*h.震え*1.5:0); const y=h.y+(h.震え>0?(Math.random()-.5)*h.震え*1.5:0);
-  ctx.save(); ctx.globalAlpha = h.アルファ*(h.消滅フラグ?Math.max(0,h.消滅透明度):1); ctx.font=`${sz}px 'Hiragino Mincho ProN','Yu Mincho',serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
-  if(夜) { ctx.shadowColor=`hsl(${h.色相},80%,62%)`; ctx.shadowBlur=h.大黒柱?18:8+(h.震え>0?12:0); ctx.fillStyle=`hsl(${h.色相},75%,72%)`; } else { ctx.shadowBlur=h.震え>0?6:0; ctx.shadowColor=`hsl(${h.色相},60%,45%)`; if(h.属性==='危険') ctx.fillStyle='#7a1a1a'; else if(h.属性==='安住') ctx.fillStyle=`hsl(${h.色相},48%,38%)`; else ctx.fillStyle=`hsl(${h.色相},52%,35%)`; }
-  if(h.道路){ctx.save();ctx.scale(2.2,1);ctx.fillText(h.文字,x/2.2,y);ctx.restore();} else ctx.fillText(h.文字,x,y);
-  if(h.新参 && h.新参タイマー>0) { const a=(h.新参タイマー/160)*0.6; ctx.strokeStyle=`hsla(${h.色相},70%,58%,${a})`; ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(x,y,sz*0.8+Math.sin(Date.now()/100)*2,0,Math.PI*2); ctx.stroke(); }
-  if(h.遠征中){ ctx.fillStyle=夜?'rgba(255,200,80,.9)':'rgba(160,70,20,.8)'; ctx.font='6px sans-serif'; ctx.fillText('▶',x+sz/2+1,y-sz/2); } ctx.restore();
+  if(h.消滅透明度<=0) return;
+  const 夜=昼夜モード()==='夜';
+  const 呼吸=(マウス中&&!TL中)?0:Math.sin(h.呼吸位相)*0.6;
+  const sz=h.サイズ+呼吸;
+  const x=h.x+(h.震え>0?(Math.random()-.5)*h.震え*1.5:0);
+  const y=h.y+(h.震え>0?(Math.random()-.5)*h.震え*1.5:0);
+
+  ctx.save();
+  ctx.globalAlpha = h.アルファ*(h.消滅フラグ?Math.max(0,h.消滅透明度):1);
+  ctx.font=`${sz}px 'Hiragino Mincho ProN','Yu Mincho',serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+
+  if(夜) {
+    ctx.shadowColor=`hsl(${h.色相},80%,62%)`;
+    ctx.shadowBlur=h.大黒柱?18:8+(h.震え>0?12:0);
+    ctx.fillStyle=`hsl(${h.色相},75%,72%)`;
+  } else {
+    ctx.shadowBlur=h.震え>0?6:0;
+    ctx.shadowColor=`hsl(${h.色相},60%,45%)`;
+    if(h.属性==='危険') ctx.fillStyle='#7a1a1a';
+    else if(h.属性==='安住') ctx.fillStyle=`hsl(${h.色相},48%,38%)`;
+    else ctx.fillStyle=`hsl(${h.色相},52%,35%)`;
+  }
+
+  if(h.道路){ctx.save();ctx.scale(2.2,1);ctx.fillText(h.文字,x/2.2,y);ctx.restore();}
+  else ctx.fillText(h.文字,x,y);
+
+  // 新参者の輪
+  if(h.新参 && h.新参タイマー>0) {
+    const a=(h.新参タイマー/160)*0.6;
+    ctx.strokeStyle=`hsla(${h.色相},70%,58%,${a})`;
+    ctx.lineWidth=1.2;
+    ctx.beginPath();
+    ctx.arc(x,y,sz*0.8+Math.sin(Date.now()/100)*2,0,Math.PI*2);
+    ctx.stroke();
+  }
+
+  // 遠征マーカー
+  if(h.遠征中){
+    ctx.fillStyle=夜?'rgba(255,200,80,.9)':'rgba(160,70,20,.8)';
+    ctx.font='6px sans-serif'; ctx.fillText('▶',x+sz/2+1,y-sz/2);
+  }
+  ctx.restore();
 }
-function 畑描画() { const 夜=昼夜モード()==='夜'; for(const 芽 of 畑リスト) { const a=0.2+芽.成熟*0.7; const sz=6+芽.成熟*5; ctx.save(); ctx.globalAlpha=a; ctx.font=`${sz}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle=夜?`rgba(150,190,255,${a})`:`rgba(90,70,40,${a})`; if(夜){ctx.shadowColor='rgba(120,160,255,.4)';ctx.shadowBlur=4*芽.成熟;} ctx.fillText(芽.文字,芽.x,芽.y); ctx.restore(); } }
-function 火花描画更新() { 火花リスト=火花リスト.filter(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.齢++; const a=Math.max(0,1-p.齢/25); if(a<=0) return false; ctx.save(); ctx.globalAlpha=a; ctx.fillStyle=p.色; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore(); return a>0; }); }
-function 足跡描画更新() { const 夜=昼夜モード()==='夜'; 足跡リスト=足跡リスト.filter(f=>{ f.齢++; const a=Math.max(0,1-f.齢/50); if(a<=0) return false; ctx.save(); ctx.globalAlpha=a*0.6; ctx.fillStyle=夜?'rgba(180,210,255,.8)':'rgba(100,80,50,.8)'; ctx.beginPath(); ctx.arc(f.x,f.y,1.2,0,Math.PI*2); ctx.fill(); ctx.restore(); return a>0; }); }
-function エモート描画更新() { エモートリスト=エモートリスト.filter(e=>{ e.y+=e.vy; e.齢++; const a=Math.max(0,1-e.齢/70); if(a<=0) return false; ctx.save(); ctx.globalAlpha=a; ctx.font='11px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(e.記号,e.x,e.y); ctx.restore(); return a>0; }); }
-function 昇天描画更新() { 昇天リスト=昇天リスト.filter(e=>{ e.y-=0.9; e.齢++; e.アルファ=Math.max(0,1-e.齢/100); if(e.アルファ<=0) return false; ctx.save(); ctx.globalAlpha=e.アルファ; ctx.font=`${e.サイズ}px 'Hiragino Mincho ProN','Yu Mincho',serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle=`hsla(${e.色相},60%,65%,${e.アルファ})`; ctx.shadowColor=`hsl(${e.色防||e.色相},70%,75%)`; ctx.shadowBlur=8; ctx.fillText(e.文字,e.x,e.y); const 輪y=e.y-e.サイズ*0.85; ctx.strokeStyle=`rgba(255,220,80,${e.アルファ*0.9})`; ctx.lineWidth=1.5; ctx.shadowColor='rgba(255,220,80,.6)'; ctx.shadowBlur=6; ctx.beginPath(); ctx.ellipse(e.x,輪y,e.サイズ*0.5,e.サイズ*0.15,0,0,Math.PI*2); ctx.stroke(); ctx.restore(); return e.アルファ>0; }); }
-function 人口増減描画更新() { 人口増減表示=人口増減表示.filter(p=>{ p.y+=p.vy; p.齢++; p.アルファ=Math.max(0,1-p.齢/55); if(p.アルファ<=0) return false; ctx.save(); ctx.globalAlpha=p.アルファ; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillStyle=p.色; ctx.shadowColor=p.色; ctx.shadowBlur=4; ctx.fillText(p.テキスト,p.x,p.y); ctx.restore(); return p.アルファ>0; }); }
-const 状態候補=['住民たちが静かに息をしている…','文字の風が吹いている','集落に灯りがともった','誰かが囁いている','畑から生命の気配がする','造語の季節が来たようだ','遠くで戦いの気配がする','旅人が道路を歩いている','小さな文字が星を見上げている'];
-function 状態更新(msg) { $状態.textContent=msg||状態候補[Math.floor(Math.random()*状態候補.length)]; if(msg) 状態タイマー=280; }
+
+function 畑描画() {
+  const 夜=昼夜モード()==='夜';
+  for(const 芽 of 畑リスト) {
+    const a=0.2+芽.成熟*0.7;
+    const sz=6+芽.成熟*5;
+    ctx.save(); ctx.globalAlpha=a;
+    ctx.font=`${sz}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=夜?`rgba(150,190,255,${a})`:`rgba(90,70,40,${a})`;
+    if(夜){ctx.shadowColor='rgba(120,160,255,.4)';ctx.shadowBlur=4*芽.成熟;}
+    ctx.fillText(芽.文字,芽.x,芽.y);
+    ctx.restore();
+  }
+}
+
+function 火花描画更新() {
+  火花リスト=火花リスト.filter(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.齢++;
+    const a=Math.max(0,1-p.齢/25);
+    if(a<=0) return false;
+    ctx.save(); ctx.globalAlpha=a;
+    ctx.fillStyle=p.色;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    return a>0;
+  });
+}
+
+function 足跡描画更新() {
+  const 夜=昼夜モード()==='夜';
+  足跡リスト=足跡リスト.filter(f=>{
+    f.齢++;
+    const a=Math.max(0,1-f.齢/50);
+    if(a<=0) return false;
+    ctx.save(); ctx.globalAlpha=a*0.6;
+    ctx.fillStyle=夜?'rgba(180,210,255,.8)':'rgba(100,80,50,.8)';
+    ctx.beginPath(); ctx.arc(f.x,f.y,1.2,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    return a>0;
+  });
+}
+
+function エモート描画更新() {
+  エモートリスト=エモートリスト.filter(e=>{
+    e.y+=e.vy; e.齢++;
+    const a=Math.max(0,1-e.齢/70);
+    if(a<=0) return false;
+    ctx.save(); ctx.globalAlpha=a;
+    ctx.font='11px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(e.記号,e.x,e.y);
+    ctx.restore();
+    return a>0;
+  });
+}
+
+function 昇天描画更新() {
+  // 天使の輪と昇天エフェクト
+  昇天リスト=昇天リスト.filter(e=>{
+    e.y-=0.9; e.齢++;
+    e.アルファ=Math.max(0,1-e.齢/100);
+    if(e.アルファ<=0) return false;
+    ctx.save();
+    ctx.globalAlpha=e.アルファ;
+    // 文字本体（半透明）
+    ctx.font=`${e.サイズ}px 'Hiragino Mincho ProN','Yu Mincho',serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=`hsla(${e.色相},60%,65%,${e.アルファ})`;
+    ctx.shadowColor=`hsl(${e.色相},70%,75%)`;
+    ctx.shadowBlur=8;
+    ctx.fillText(e.文字,e.x,e.y);
+    // 天使の輪（金色の楕円）
+    const 輪y=e.y-e.サイズ*0.85;
+    ctx.strokeStyle=`rgba(255,220,80,${e.アルファ*0.9})`;
+    ctx.lineWidth=1.5;
+    ctx.shadowColor='rgba(255,220,80,.6)';
+    ctx.shadowBlur=6;
+    ctx.beginPath();
+    ctx.ellipse(e.x,輪y,e.サイズ*0.5,e.サイズ*0.15,0,0,Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+    return e.アルファ>0;
+  });
+}
+
+function 人口増減描画更新() {
+  人口増減表示=人口増減表示.filter(p=>{
+    p.y+=p.vy; p.齢++;
+    p.アルファ=Math.max(0,1-p.齢/55);
+    if(p.アルファ<=0) return false;
+    ctx.save();
+    ctx.globalAlpha=p.アルファ;
+    ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle=p.色;
+    ctx.shadowColor=p.色; ctx.shadowBlur=4;
+    ctx.fillText(p.テキスト,p.x,p.y);
+    ctx.restore();
+    return p.アルファ>0;
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  UI更新
+// ══════════════════════════════════════════════════════
+const 状態候補=['住民たちが静かに息をしている…','文字の風が吹いている','集落に灯りがともった',
+  '誰かが囁いている','畑から生命の気配がする','造語の季節が来たようだ',
+  '遠くで戦いの気配がする','旅人が道路を歩いている','小さな文字が星を見上げている'];
+
+function 状態更新(msg) {
+  $状態.textContent=msg||状態候補[Math.floor(Math.random()*状態候補.length)];
+  if(msg) 状態タイマー=280;
+}
+
 function UI更新() {
-  const 人口=住民リスト.filter(h=>!h.消滅フラグ).length; let 称号='原始の地'; for(const[閾,名] of 文明称号){if(人口>=閾) 称号=名;} $文明.textContent=称号;
-  if(人口!==人口前回){ $人口.textContent=`住民 ${人口} 人`; $人口.classList.remove('増加','減少'); void $人口.offsetWidth; $人口.classList.add(人口>人口前回?'増加':'減少'
+  const 人口=住民リスト.filter(h=>!h.消滅フラグ).length;
+  let 称号='原始の地';
+  for(const[閾,名] of 文明称号){if(人口>=閾) 称号=名;}
+  $文明.textContent=称号;
+
+  if(人口!==人口前回){
+    $人口.textContent=`住民 ${人口} 人`;
+    $人口.classList.remove('増加','減少');
+    void $人口.offsetWidth;
+    $人口.classList.add(人口>人口前回?'増加':'減少');
+    setTimeout(()=>$人口.classList.remove('増加','減少'),800);
+    人口前回=人口;
+  }
+
+  // 昼夜クラス
+  const m=昼夜モード();
+  document.body.classList.toggle('夜',m==='夜');
+  document.body.classList.toggle('夕',m==='夕');
+
+  // ステータスタイマー
+  if(状態タイマー>0){状態タイマー--;if(状態タイマー===0) 状態更新();}
+}
+
+// ══════════════════════════════════════════════════════
+//  メインループ
+// ══════════════════════════════════════════════════════
+let 前時刻=0;
+function ループ(時刻) {
+  RAF_ID=requestAnimationFrame(ループ);
+  const 倍率=TL中?50:1;
+
+  // 物理
+  住民リスト.forEach(h=>物理ステップ(h,倍率));
+  // 消滅後のクリーンアップ
+  住民リスト=住民リスト.filter(h=>!(h.消滅フラグ&&h.消滅透明度<=0));
+
+  // 陣形（毎60フレーム）
+  if(フレーム%60===0) 陣形更新();
+
+  遠征処理(倍率);
+  遠征更新(倍率);
+  畑代謝(倍率);
+
+  // 描画
+  背景描画();
+  畑描画();
+  足跡描画更新();
+  住民リスト.forEach(h=>住人描画(h));
+  火花描画更新();
+  エモート描画更新();
+  昇天描画更新();
+  人口増減描画更新();
+
+  // TLカウントダウン
+  if(TL中){
+    TL残フレーム-=倍率;
+    if(TL残フレーム<=0){TL中=false;$TL幕.classList.remove('on');}
+  }
+
+  if(フレーム%30===0) UI更新();
+
+  // 通常ルートのエンディング条件チェック（毎600フレーム≒10秒）
+  if(フレーム%600===0 && 通常エンディング条件チェック()) エンディング発動();
+
+  フレーム++;
+}
+
+// ══════════════════════════════════════════════════════
+//  お留守番システム（タイムラプス）
+// ══════════════════════════════════════════════════════
+function 保存() {
+  try {
+    const d={
+      住民:住民リスト.filter(h=>!h.消滅フラグ).map(h=>({文字:h.文字,単語:h.単語,x:h.x,y:h.y})),
+      畑:畑リスト,
+      時刻:Date.now(),
+    };
+    localStorage.setItem('文字生態系',JSON.stringify(d));
+  }catch(e){}
+}
+
+function 復元() {
+  try {
+    const raw=localStorage.getItem('文字生態系');
+    if(!raw) return;
+    const d=JSON.parse(raw);
+    const 経過分=(Date.now()-d.時刻)/60000;
+    if(d.住民&&d.住民.length>0){
+      d.住民.forEach(s=>{
+        const h=new 住人(s.文字,s.単語,s.x,s.y);
+        住民リスト.push(h);
+      });
+      畑リスト=d.畑||[];
+      if(経過分>=30){
+        TL中=true; TL残フレーム=90;
+        $TL詳.textContent=`約${Math.floor(経過分)}分の留守中、文明は変わり続けた…`;
+        $TL幕.classList.add('on');
+        setTimeout(()=>{$TL幕.classList.remove('on');TL中=false;},2500);
+      }
+    }
+  }catch(e){}
+}
+
+// ══════════════════════════════════════════════════════
+//  Canvasリサイズ
+// ══════════════════════════════════════════════════════
+function リサイズ() {
+  const el=document.getElementById('地図層');
+  const r=el.getBoundingClientRect();
+  canvas.width=Math.floor(r.width);
+  canvas.height=Math.floor(r.height);
+}
+
+// ══════════════════════════════════════════════════════
+//  ユーティリティ
+// ══════════════════════════════════════════════════════
+function lerp色(a,b,t) {
+  const r1=parseInt(a.slice(1,3),16),g1=parseInt(a.slice(3,5),16),b1=parseInt(a.slice(5,7),16);
+  const r2=parseInt(b.slice(1,3),16),g2=parseInt(b.slice(3,5),16),b2=parseInt(b.slice(5,7),16);
+  const rr=Math.round(r1+(r2-r1)*t).toString(16).padStart(2,'0');
+  const gg=Math.round(g1+(g2-g1)*t).toString(16).padStart(2,'0');
+  const bb=Math.round(b1+(b2-b1)*t).toString(16).padStart(2,'0');
+  return `#${rr}${gg}${bb}`;
+}
+
+// ══════════════════════════════════════════════════════
+//  イベント
+// ══════════════════════════════════════════════════════
+document.getElementById('命ボタン').addEventListener('click',()=>{
+  AC初期化(); // ブラウザの音声制限を解除
+  const v=$入力.value.trim();
+  if(!v) return;
+
+  // 隠しコマンド判定
+  if(v === 'ずっとみていたよ') {
+    $入力.value='';
+    // 何も起きないように見せる（ただし何も生成しない）
+    // 30秒後に発動
+    if(!エンディング発動済み) {
+      隠しコマンド待機中 = true;
+      if(隠しコマンドタイマー) clearTimeout(隠しコマンドタイマー);
+      隠しコマンドタイマー = setTimeout(()=>{
+        隠しコマンド待機中 = false;
+        エンディング発動();
+      }, 2000);
+    }
+    return;
+  }
+
+  生成(v);
+  $入力.value='';
+  状態更新(`「${v}」の命が芽生えた`);
+});
+
+$入力.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){ document.getElementById('命ボタン').click(); }
+});
+
+document.getElementById('リセットボタン').addEventListener('click',()=>{
+  住民リスト=[];畑リスト=[];火花リスト=[];足跡リスト=[];エモートリスト=[];
+  昇天リスト=[];人口増減表示=[];遠征隊リスト=[];
+  文字頻度={};既知文字=new Set();一族色Map={};
+  人口前回=0; $人口.textContent='住民 0 人';
+  localStorage.removeItem('文字生態系');
+  状態更新('世界がリセットされた。また始まりの時');
+});
+
+// ステータスバータップ→心の声
+document.getElementById('下部').addEventListener('click',()=>{
+  const 生存=住民リスト.filter(h=>!h.消滅フラグ);
+  if(!生存.length){状態更新('…静寂だけが残っている');return;}
+  const h=生存[Math.floor(Math.random()*生存.length)];
+  const 声=K.心の声[Math.floor(Math.random()*K.心の声.length)];
+  状態更新(`「${h.文字}」の声：${声}`);
+});
+
+// タッチ・マウス
+const touchStart=()=>{ マウス中=true; };
+const touchEnd=()=>{ マウス中=false; };
+canvas.addEventListener('touchstart',touchStart,{passive:true});
+canvas.addEventListener('touchend',touchEnd,{passive:true});
+canvas.addEventListener('mouseenter',touchStart);
+canvas.addEventListener('mouseleave',touchEnd);
+
+// 初回インタラクションで AudioContext を解除
+function 初回音声解除() {
+  AC初期化();
+  document.removeEventListener('click', 初回音声解除);
+  document.removeEventListener('touchstart', 初回音声解除);
+}
+document.addEventListener('click', 初回音声解除, { once: true, passive: true });
+document.addEventListener('touchstart', 初回音声解除, { once: true, passive: true });
+
+// 閉じる時に保存
+window.addEventListener('beforeunload',保存);
+window.addEventListener('pagehide',保存);
+
+// ══════════════════════════════════════════════════════
+//  起動
+// ══════════════════════════════════════════════════════
+function 起動() {
+  リサイズ();
+  復元();
+  // サイズバグ対策
+  setTimeout(()=>{リサイズ();},500);
+  setTimeout(()=>{リサイズ();},1200);
+  // 初期住民なければデモ生成
+  if(住民リスト.length===0){
+    ['家','言','葉','安','道','草','木','水'].forEach((c,i)=>{
+      setTimeout(()=>{
+        生成(c,80+Math.random()*(canvas.width-160),80+Math.random()*(canvas.height*0.5));
+      },i*200);
+    });
+  }
+  requestAnimationFrame(ループ);
+}
+
+window.addEventListener('resize',リサイズ);
+起動();
+</script>
+</body>
+</html>
