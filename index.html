@@ -4,6 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>文字の生態系文明</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="文字の生態系">
+<meta name="theme-color" content="#8b6f47">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIiIDUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5NiIgZmlsbD0iIzA5MGMwNyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iLjM1ZW0iIGZvbnQtZmFtaWx5PSInSGlyYWdpbm8gTWluY2hvIFByb04nLCAnWXUgTWluY2hvJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhiaDYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlJ88L3RleHQ+Cjwvc3ZnPg==">
+
+<script>
+// Service Worker 登録
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('[SW] 登録成功:', reg.scope))
+      .catch(err => console.warn('[SW] 登録失敗:', err));
+  });
+}
+</script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
