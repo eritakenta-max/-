@@ -1,0 +1,24 @@
+{
+  "name": "文字の生態系文明",
+  "short_name": "文字生態系",
+  "description": "文字たちの生態系を観察するシミュレーションアプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f2ece0",
+  "theme_color": "#8b6f47",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIiIDUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5NiIgZmlsbD0iIzA5MGMwNyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iLjM1ZW0iIGZvbnQtZmFtaWx5PSInSGlyYWdpbm8gTWluY2hvIFByb04nLCAnWXUgTWluY2hvJScsYmFja2dyb3VuZC1jb2xvciwgc2VyaWYiIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhiaDYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlJ88L3RleHQ+Cjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIiIDUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5NiIgZmlsbD0iIzA5MGMwNyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iLjM1ZW0iIGZvbnQtZmFtaWx5PSInSGlyYWdpbm8gTWluY2hvIFByb04nLCAnWXUgTWluY2hvJScsYmFja2dyb3VuZC1jb2xvciwgc2VyaWYiIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhiaDYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlJ88L3RleHQ+Cjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
