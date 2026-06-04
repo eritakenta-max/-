@@ -9,16 +9,16 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIiIDUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5NiIgZmlsbD0iIzA5MGMwNyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iLjM1ZW0iIGZvbnQtZmFtaWx5PSInSGlyYWdpbm8gTWluY2hvIFByb04nLCAnWXUgTWluY2hvJScsYmFja2dyb3VuZC1jb2xvciwgc2VyaWYiIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhiaDYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlJ88L3RleHQ+Cjwvc3ZnPg==",
-      "sizes": "512x512",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj4KICA8cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjMDkwYzA3Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGR5PSIuMzVlbSIgZm9udC1mYW1pbHk9IidIaXJhZ2lubyBNaW5jaG8gUHJvTicsICdZdSBNaW5jaG8nLCBzZXJpZiIgZm9udC1zaXplPSIxMDAiIGZpbGw9IiNjOGI2ZjQ3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlJ88L3RleHQ+Cjwvc3ZnPg==",
+      "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIiIDUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5NiIgZmlsbD0iIzA5MGMwNyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iLjM1ZW0iIGZvbnQtZmFtaWx5PSInSGlyYWdpbm8gTWluY2hvIFByb04nLCAnWXUgTWluY2hvJScsYmFja2dyb3VuZC1jb2xvciwgc2VyaWYiIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhiaDYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlJ88L3RleHQ+Cjwvc3ZnPg==",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIiIDUxMiIjPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iOTYiIGZpbGw9IiMwOTBjMDciLz4KICA8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZHk9Ii4zNWVtIiBmb250LWZhbWlseT0iJ0hpcmFnaW5vIE1pbmNobyBQcm9OJywgJ1l1IE1pbmNobycsIHNlcmlmIiBmb250LXNpemU9IjI4MCIgZmlsbD0iI2M4YjZmNDciIHRleHQtYW5jaG9yPSJtaWRkbGUiPuWunzwvdGV4dD4KPC9zdmc+",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
